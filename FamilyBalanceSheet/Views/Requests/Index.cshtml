@@ -1,0 +1,66 @@
+﻿@model IEnumerable<FamilyBalanceSheet.Models.Request>
+
+@{
+    ViewData["Title"] = "一覧";
+}
+
+<h1>リクエスト一覧</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateAndTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Balance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsAccepted)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateAndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Balance)
+            </td>
+            <td>
+                <form asp-action="Accept" method="post">
+                    <input type="hidden" name="id" value="@item.Id"/>
+                    <input type="hidden" class="user" value="@item.UserName" />
+                    <input type="hidden" class="acceptor" value="@User.Identity?.Name" />
+                    @if (!item.IsAccepted)
+                    {
+                        <button class="btn btn-primary">承認</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary" disabled>承認済み</button>
+                    }
+                </form>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="~/js/requestAccepted.js" asp-append-version="true"></script>
+}

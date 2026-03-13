@@ -1,0 +1,69 @@
+﻿@model IEnumerable<FamilyBalanceSheet.Models.Item>
+
+@{
+    ViewData["Title"] = "小遣い帳";
+    decimal total = decimal.Zero;
+}
+
+<h1>小遣い帳</h1>
+
+<p>
+    <a asp-action="Create">項目を追加</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DateAndTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Expense)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Income)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+            total += item.Income;
+            total -= item.Expense;
+            <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateAndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Expense)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Income)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">修正</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">詳細</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">削除</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<div class="container">
+    <div class="row">
+        <div class="col-auto">残高: </div>
+        <div class="col">&yen;@total</div>
+    </div>
+    <div class="row">
+        <form asp-controller="Requests" asp-action="Create" method="get">
+            <input type="hidden" name="balance" value="@total"/>
+            <input type="submit" class="btn btn-primary" value="リクエスト"/>
+        </form>
+    </div>
+</div>
