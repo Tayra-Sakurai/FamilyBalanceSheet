@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using FamilyBalanceSheet.Contexts;
 using FamilyBalanceSheet.Models;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Text;
 
 namespace FamilyBalanceSheet.Controllers
 {
@@ -25,7 +26,7 @@ namespace FamilyBalanceSheet.Controllers
         }
 
         // GET: Home
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString)
         {
             if (User.Identity?.IsAuthenticated is not true)
             {
@@ -33,9 +34,20 @@ namespace FamilyBalanceSheet.Controllers
             }
 
             List<Item> items = await _context.Items.ToListAsync();
+            
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                items = items.Where(item => item.ItemName.ToLower().Normalize(NormalizationForm.FormKD).ToLowerInvariant().Contains(searchString.ToLower().Normalize(NormalizationForm.FormKD).ToLowerInvariant())).ToList();
+            }
+
             items = items.Where(item => item.UserName == User.Identity!.Name).ToList();
             items.Sort();
-            return View(items);
+            IndexViewModel indexViewModel = new IndexViewModel
+            {
+                Items = items,
+                SearchString = searchString?.ToLower() ?? string.Empty,
+            };
+            return View(indexViewModel);
         }
 
         // GET: Home/Details/5

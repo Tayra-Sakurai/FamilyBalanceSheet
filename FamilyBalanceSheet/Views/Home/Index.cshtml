@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FamilyBalanceSheet.Models.Item>
+﻿@model FamilyBalanceSheet.Models.IndexViewModel
 
 @{
     ViewData["Title"] = "小遣い帳";
@@ -10,26 +10,37 @@
 <p>
     <a asp-action="Create">項目を追加</a>
 </p>
+
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <label asp-for="SearchString">検索</label>
+        <input class="form-control" asp-for="SearchString" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="検索" class="btn btn-primary" />
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.DateAndTime)
+                @Html.DisplayNameFor(model => model.Items![0].DateAndTime)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ItemName)
+                @Html.DisplayNameFor(model => model.Items![0].ItemName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Expense)
+                @Html.DisplayNameFor(model => model.Items![0].Expense)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Income)
+                @Html.DisplayNameFor(model => model.Items![0].Income)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Items!) {
             total += item.Income;
             total -= item.Expense;
             <tr>
@@ -62,8 +73,10 @@
     </div>
     <div class="row">
         <form asp-controller="Requests" asp-action="Create" method="get">
-            <input type="hidden" name="balance" value="@total"/>
-            <input type="submit" class="btn btn-primary" value="リクエスト"/>
+            <input type="hidden" name="balance" value="@total" />
+@if (string.IsNullOrEmpty(Model.SearchString)) {
+            <input type="submit" class="btn btn-primary" value="リクエスト" />
+}
         </form>
     </div>
 </div>
